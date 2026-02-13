@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- Google Analytics -->
+    <!-- Google Analytics + Google Ads -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-BDNKTLRKG1"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -14,10 +14,7 @@
         'anonymize_ip': true,
         'cookie_flags': 'SameSite=None;Secure'
       });
-    </script>
-    <!-- Google Ads Conversion Tracking -->
-    <script>
-      gtag('event', 'ads_conversion_Checkout_1', {});
+      gtag('config', 'AW-11328023349');
     </script>
     
     <!-- Primary SEO Meta Tags - Hyper-Optimized for Google Ads -->
@@ -702,11 +699,11 @@ AI-Powered Book Writing Software — Write a Complete Book Today
                         </li>
                         <li>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                            2 regenerations per step
+                            5 generations per step
                         </li>
                         <li>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                            1 full book regenerations
+                            2 full book regenerations
                         </li>
                         <li>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -814,17 +811,17 @@ AI-Powered Book Writing Software — Write a Complete Book Today
                     </a>
                     <p>AI-powered book writing software. Transform your ideas into professionally written books, novels, and guides in minutes.</p>
                     <div class="footer-social">
-                        <a href="https://twitter.com/arqonai" aria-label="Twitter" rel="noopener noreferrer" target="_blank">
+                        <a href="https://twitter.com/myveryownbook" aria-label="Twitter" rel="noopener noreferrer" target="_blank">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
                             </svg>
                         </a>
-                        <a href="https://facebook.com/writemyveryownbook" aria-label="Facebook" rel="noopener noreferrer" target="_blank">
+                        <a href="https://facebook.com/myveryownbook" aria-label="Facebook" rel="noopener noreferrer" target="_blank">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
                             </svg>
                         </a>
-                        <a href="https://linkedin.com/company/writemyveryownbook" aria-label="LinkedIn" rel="noopener noreferrer" target="_blank">
+                        <a href="https://linkedin.com/company/myveryownbook" aria-label="LinkedIn" rel="noopener noreferrer" target="_blank">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
                                 <rect x="2" y="9" width="4" height="12"></rect>
@@ -895,6 +892,73 @@ AI-Powered Book Writing Software — Write a Complete Book Today
             question.addEventListener('click', function() {
                 this.parentElement.classList.toggle('open');
             });
+        });
+
+        // === Analytics: CTA Click Tracking ===
+        document.querySelectorAll('a[href*="app.writemyveryownbook.com"]').forEach(function(cta) {
+            cta.addEventListener('click', function() {
+                var label = this.textContent.trim().substring(0, 50);
+                var section = this.closest('section');
+                var sectionId = section ? section.id || 'unknown' : 'sticky';
+                gtag('event', 'cta_click', {
+                    event_category: 'engagement',
+                    event_label: label,
+                    section: sectionId,
+                    destination: this.href
+                });
+                // Track as Google Ads remarketing event
+                gtag('event', 'page_view', {
+                    page_title: 'CTA Click - ' + sectionId,
+                    page_location: window.location.origin + '/cta/' + sectionId
+                });
+            });
+        });
+
+        // === Analytics: Scroll Depth Tracking ===
+        var scrollMilestones = { 25: false, 50: false, 75: false, 100: false };
+        window.addEventListener('scroll', function() {
+            var scrollPercent = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+            [25, 50, 75, 100].forEach(function(milestone) {
+                if (scrollPercent >= milestone && !scrollMilestones[milestone]) {
+                    scrollMilestones[milestone] = true;
+                    gtag('event', 'scroll_depth', {
+                        event_category: 'engagement',
+                        event_label: milestone + '%',
+                        value: milestone
+                    });
+                }
+            });
+        }, { passive: true });
+
+        // === Analytics: Section Visibility (which sections users actually see) ===
+        if ('IntersectionObserver' in window) {
+            var sectionObserver = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        gtag('event', 'section_view', {
+                            event_category: 'engagement',
+                            event_label: entry.target.id || 'unnamed',
+                            section_id: entry.target.id
+                        });
+                        sectionObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.3 });
+            document.querySelectorAll('section[id]').forEach(function(section) {
+                sectionObserver.observe(section);
+            });
+        }
+
+        // === Analytics: Time on Page (engaged users signal) ===
+        var engagementTimers = [15, 30, 60, 120];
+        engagementTimers.forEach(function(seconds) {
+            setTimeout(function() {
+                gtag('event', 'time_on_page', {
+                    event_category: 'engagement',
+                    event_label: seconds + 's',
+                    value: seconds
+                });
+            }, seconds * 1000);
         });
     </script>
 </body>
